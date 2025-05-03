@@ -14,7 +14,7 @@ class MusicGenSynthesizer:
 
     def __init__(self,
                  model_name: str = 'facebook/musicgen-medium',
-                 device: str = 'cuda',
+                 device: str = 'cpu',
                  sample_rate: int = 16000,
                  ) -> None:
         self.device = device
@@ -87,7 +87,7 @@ class MusicGenAgent:
         music_prompt = self.generate_music_prompt_from_story(pages)
         generation_agent = MusicGenSynthesizer(
             model_name=self.cfg.get("model_name", "facebook/musicgen-medium"),
-            device=self.cfg.get("device", "cuda"),
+            device="cpu",
             sample_rate=self.cfg.get("sample_rate", 16000),
         )
         generation_agent.call(

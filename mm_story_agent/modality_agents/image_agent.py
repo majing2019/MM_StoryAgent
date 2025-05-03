@@ -115,12 +115,14 @@ def cal_attn_mask_xl(total_length,
                      sa64,
                      height,
                      width,
-                     device="cuda",
+                     device=('cuda' if torch.cuda.is_available() else 'cpu'),
                      dtype=torch.float16):
     nums_1024 = (height // 32) * (width // 32)
     nums_4096 = (height // 16) * (width // 16)
-    bool_matrix1024 = torch.rand((1, total_length * nums_1024),device = device,dtype = dtype) < sa32
-    bool_matrix4096 = torch.rand((1, total_length * nums_4096),device = device,dtype = dtype) < sa64
+    # bool_matrix1024 = torch.rand((1, total_length * nums_1024),device = device,dtype = dtype) < sa32
+    # bool_matrix4096 = torch.rand((1, total_length * nums_4096),device = device,dtype = dtype) < sa64
+    bool_matrix1024 = torch.zeros((1, total_length * nums_1024),device = device) < sa32
+    bool_matrix4096 = torch.zeros((1, total_length * nums_4096),device = device) < sa64
     bool_matrix1024 = bool_matrix1024.repeat(total_length,1)
     bool_matrix4096 = bool_matrix4096.repeat(total_length,1)
     for i in range(total_length):
@@ -442,7 +444,7 @@ class StoryDiffusionSynthesizer:
 
         pipe = StableDiffusionXLPipeline.from_pretrained(
             model_name,
-            torch_dtype=torch.float16,
+            # torch_dtype=torch.float16,
             use_safetensors=True
         )
 
@@ -492,7 +494,7 @@ class StoryDiffusionSynthesizer:
             self.height,
             self.width,
             device=self.device,
-            dtype=torch.float16,
+            # dtype=torch.float16,
         )
 
         self.attn_args.update({
@@ -582,7 +584,9 @@ class StoryDiffusionAgent:
     def call(self, params: Dict):
         pages: List = params["pages"]
         save_path: str = params["save_path"]
+        print("extract_role_from_story")
         role_dict = self.extract_role_from_story(pages)
+        print("generate image prompts from story")
         image_prompts = self.generate_image_prompt_from_story(pages)
         image_prompts_with_role_desc = []
         for image_prompt in image_prompts:
@@ -598,6 +602,8 @@ class StoryDiffusionAgent:
             id_length=self.cfg.get("id_length", 4),
             num_steps=self.cfg.get("num_steps", 50)
         )
+        print("generate images")
+        print(image_prompts_with_role_desc)
         images = generation_agent.call(
             image_prompts_with_role_desc,
             style_name=params.get("style_name", "Storybook"),

@@ -11,7 +11,8 @@ from .base import init_tool_instance
 class MMStoryAgent:
 
     def __init__(self) -> None:
-        self.modalities = ["image", "sound", "speech", "music"]
+        # cself.modalities = ["image", "sound", "speech", "music"]
+        self.modalities = ["music"]
 
     def call_modality_agent(self, modality, agent, params, return_dict):
         result = agent.call(params)

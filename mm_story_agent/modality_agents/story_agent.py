@@ -133,7 +133,7 @@ class QAOutlineStoryWriter:
                 )
             pages = [page.strip() for page in eval(chapter_detail)]
             all_pages.extend(pages)
-        # print(all_pages)
+        print(all_pages)
         return all_pages
 
     def call(self, params):

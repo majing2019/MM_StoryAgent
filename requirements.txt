@@ -13,3 +13,5 @@ torch
 transformers
 diffusers
 git+https://github.com/aliyun/alibabacloud-nls-python-sdk@dev
+torchaudio
+accelerate

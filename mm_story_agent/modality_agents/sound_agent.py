@@ -18,7 +18,7 @@ class AudioLDM2Synthesizer:
         self.device = device
         self.pipe = AudioLDM2Pipeline.from_pretrained(
             "cvssp/audioldm2",
-            torch_dtype=torch.float16
+            # torch_dtype=torch.float16
         ).to(self.device)
     
     def call(
@@ -61,7 +61,7 @@ class AudioLDM2Agent:
                 save_paths.append(save_path / f"p{idx + 1}.wav")
                 forward_prompts.append(sound_prompts[idx])
         
-        generation_agent = AudioLDM2Synthesizer(device=self.cfg.get("device", "cuda"))
+        generation_agent = AudioLDM2Synthesizer(device=('cuda' if torch.cuda.is_available() else 'cpu'))
         if len(forward_prompts) > 0:
             sounds = generation_agent.call(
                 forward_prompts,
